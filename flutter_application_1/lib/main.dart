@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       },
       theme: ThemeData.light().copyWith(
           appBarTheme: AppBarTheme(
-        color: Colors.lightBlueAccent,
+        color: Color.fromARGB(255, 83, 191, 241),
       )),
     );
   }

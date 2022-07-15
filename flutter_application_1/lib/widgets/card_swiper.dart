@@ -20,10 +20,14 @@ class CardSwiper extends StatelessWidget {
         ),
       );
     }
+
+    // int leg = movies.length;
+// print("Pelis: $leg");
     return Container(
       width: double.infinity,
       height: size.height * 0.5,
       // color: Colors.red,
+      
       child: Swiper(
         itemCount: movies.length,
         layout: SwiperLayout.STACK,

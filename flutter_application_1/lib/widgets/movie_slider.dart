@@ -1,10 +1,31 @@
 import "package:flutter/material.dart";
 
-class MovieSlider extends StatelessWidget {
-  const MovieSlider({Key? key}) : super(key: key);
+import '../models/models.dart';
 
+class MovieSlider extends StatelessWidget {
+final List<Movie> movies;
+ String title;
+
+   MovieSlider({super.key, required this.movies, this.title = ""});
   @override
   Widget build(BuildContext context) {
+    
+    var padTitle = Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Populares',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          );
+
+bool titleAvailable = false;
+if (title.isNotEmpty){
+  titleAvailable = true;
+} 
+// int leg = movies.length;
+// print("Pelis: $leg");
+
+
     return Container(
       width: double.infinity,
       height: 275,
@@ -12,21 +33,19 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'Populares',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
+        titleAvailable ?  padTitle : Container(),
           SizedBox(
             height: 5,
           ),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 20,
-              itemBuilder: (_, int index) => _MoviePoster(),
+              itemCount: movies.length,
+              itemBuilder: (_, int index) {
+                          final movie = movies[index];
+
+               return _MoviePoster(movie: movie);
+              },
             ),
           ),
         ],
@@ -36,12 +55,19 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
+   
+          final movie;
+
+  const _MoviePoster({super.key, required this.movie});
+
+
   @override
   Widget build(BuildContext context) {
+
     return Container(
       width: 130,
       height: 190,
-      // color: Colors.green,
+      //  color: Colors.green,
       margin: EdgeInsets.symmetric(
         horizontal: 10,
       ),
@@ -55,7 +81,7 @@ class _MoviePoster extends StatelessWidget {
               child: FadeInImage(
                 // height: 185,
                 placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage('https://via.placeholder.com/300x400'),
+                image: NetworkImage(movie.fullPosterImg),
               ),
             ),
           ),
@@ -63,7 +89,7 @@ class _MoviePoster extends StatelessWidget {
             height: 5,
           ),
           Text(
-            'Star Wars: El retorno de el nuevo jedi silvestre de monte cristo',
+            movie.title,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
             textAlign: TextAlign.center,

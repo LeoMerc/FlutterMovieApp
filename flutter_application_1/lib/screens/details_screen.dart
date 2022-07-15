@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({Key? key}) : super(key: key);
+import '../widgets/widgets.dart';
 
+class DetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //ToDo: Get the movie instance from the arguments
+    //ToDo: Get the movie instance from the arguments 113
     final String movie =
         ModalRoute.of(context)?.settings.arguments.toString() ?? 'no-movie';
     return Scaffold(
@@ -16,6 +16,10 @@ class DetailsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 _PosterAndTitle(),
+                _Overview(),
+                _Overview(),
+                _Overview(),
+                CastingCards(),
               ],
             ),
           ),
@@ -38,9 +42,10 @@ class _CustomAppBar extends StatelessWidget {
         titlePadding: EdgeInsets.all(0),
         title: Container(
           width: double.infinity,
+          padding: EdgeInsets.only(bottom: 10),
           child: Text(
             'movie.title',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20.0),
           ),
           alignment: Alignment.bottomCenter,
           color: Colors.black12,
@@ -107,6 +112,22 @@ class _PosterAndTitle extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _Overview extends StatelessWidget {
+  const _Overview({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      child: Text(
+        'Ad aute sit enim laboris qui consectetur aliqua. Laborum sit consequat eu amet est eiusmod deserunt quis fugiat nostrud ut pariatur ut. Dolore labore incididunt Lorem eiusmod dolor consectetur in sint elit officia et veniam.',
+        textAlign: TextAlign.justify,
+        style: Theme.of(context).textTheme.subtitle1,
       ),
     );
   }

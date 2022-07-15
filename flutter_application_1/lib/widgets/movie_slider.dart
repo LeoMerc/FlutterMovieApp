@@ -2,29 +2,66 @@ import "package:flutter/material.dart";
 
 import '../models/models.dart';
 
-class MovieSlider extends StatelessWidget {
-final List<Movie> movies;
- String title;
+class MovieSlider extends StatefulWidget {
+  final List<Movie> movies;
+  String title;
+  final Function onNextPage;
 
-   MovieSlider({super.key, required this.movies, this.title = ""});
+  MovieSlider(
+      {super.key,
+      required this.movies,
+      this.title = "",
+      required this.onNextPage});
+
   @override
-  Widget build(BuildContext context) {
-    
-    var padTitle = Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'Populares',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          );
+  State<MovieSlider> createState() => _MovieSliderState();
+}
 
-bool titleAvailable = false;
-if (title.isNotEmpty){
-  titleAvailable = true;
-} 
+class _MovieSliderState extends State<MovieSlider> {
+  bool _canGetMore = true;
+
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController.addListener(() {
+      print(scrollController.position.pixels);
+
+      print(scrollController.position.maxScrollExtent);
+
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        //ToDo llamar provider
+        print('Obtener next page');
+        if (_canGetMore) {
+          _canGetMore = false;
+          widget.onNextPage();
+        }
+      } else {
+        _canGetMore = true;
+      }
+    });
+  }
+
+  void dispose() {}
+
+  Widget build(BuildContext context) {
+    var padTitle = Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        'Populares',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
+
+    bool titleAvailable = false;
+    if (widget.title.isNotEmpty) {
+      titleAvailable = true;
+    }
 // int leg = movies.length;
 // print("Pelis: $leg");
-
 
     return Container(
       width: double.infinity,
@@ -33,18 +70,19 @@ if (title.isNotEmpty){
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        titleAvailable ?  padTitle : Container(),
+          titleAvailable ? padTitle : Container(),
           SizedBox(
             height: 5,
           ),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: movies.length,
+              itemCount: widget.movies.length,
               itemBuilder: (_, int index) {
-                          final movie = movies[index];
+                final movie = widget.movies[index];
 
-               return _MoviePoster(movie: movie);
+                return _MoviePoster(movie, '${widget.title}-${index}-${widget.movies[index].id}');
               },
             ),
           ),
@@ -55,14 +93,13 @@ if (title.isNotEmpty){
 }
 
 class _MoviePoster extends StatelessWidget {
-   
-          final movie;
-
-  const _MoviePoster({super.key, required this.movie});
-
+  final movie;
+  final String heroId;
+  const _MoviePoster(this.movie, this.heroId);
 
   @override
   Widget build(BuildContext context) {
+    movie.heroId = heroId;
 
     return Container(
       width: 130,
@@ -74,14 +111,17 @@ class _MoviePoster extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details',
-                arguments: 'movie-instance'),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: FadeInImage(
-                // height: 185,
-                placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage(movie.fullPosterImg),
+            onTap: () =>
+                Navigator.pushNamed(context, 'details', arguments: movie),
+            child: Hero(
+              tag: heroId,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: FadeInImage(
+                  // height: 185,
+                  placeholder: AssetImage('assets/no-image.jpg'),
+                  image: NetworkImage(movie.fullPosterImg),
+                ),
               ),
             ),
           ),
